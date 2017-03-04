@@ -1,8 +1,22 @@
 /* @flow */
-export type Action = void
+export type Action =
+  {
+    type: 'GET_ITEMS'
+  }
+
 export type State = {
+  items: Array<any>
 }
 
-export default (_s: State) => ({
-  home: {}
-})
+const initialState: State = {
+  items: []
+}
+
+export default (state: State = initialState, action: Action): State => {
+  switch (action.type) {
+    case 'GET_ITEMS':
+      return initialState
+    default:
+      return state
+  }
+}
