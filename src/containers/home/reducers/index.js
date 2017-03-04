@@ -25,6 +25,24 @@ export default (state: State = initialState, action: Action): State => {
 }
 
 export const getItems = createAction('GET_ITEMS', async () => {
-  const result = await axios.get('http://localhost:3000/items')
+  axios.defaults.baseURL = 'http://localhost:3000/'
+  axios.defaults.timeout = 3000
+  axios.defaults.headers.post['Content-Type'] = 'application/json'
+  const userTokenResult = await axios.post(
+    'user_token',
+    {
+      auth: {
+        email: 'test@example.com',
+        password: 'test123'
+      }
+    }
+  )
+  const jwtToken = userTokenResult.data.jwt
+  const instance = axios.create({
+    headers: {
+      'Authorization': `Bearer ${jwtToken}`
+    }
+  })
+  const result = instance.get('http://localhost:3000/items')
   return result.body
 })
