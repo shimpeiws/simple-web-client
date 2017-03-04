@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react'
 import Hello from '../../../components/Hello'
 
-function Home (onClickGetItems, ...rests) {
+function Home ({onClickGetItems, ...rests}) {
   return <div>
     Home
     <Hello/>
