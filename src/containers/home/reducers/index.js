@@ -24,7 +24,7 @@ export default (state: State = initialState, action: Action): State => {
   }
 }
 
-export const getItems = createAction('GET_ITEMS', async () => {
+const getJwtToken = async () => {
   axios.defaults.baseURL = 'http://localhost:3000/'
   axios.defaults.timeout = 3000
   axios.defaults.headers.post['Content-Type'] = 'application/json'
@@ -37,13 +37,21 @@ export const getItems = createAction('GET_ITEMS', async () => {
       }
     }
   )
-  const jwtToken = userTokenResult.data.jwt
-  const instance = axios.create({
+  return userTokenResult.data.jwt
+}
+
+const getInstane = async () => {
+  const jwtToken = await getJwtToken()
+  return axios.create({
     headers: {
       'Authorization': `Bearer ${jwtToken}`
     }
   })
-  const result = await axios
+}
+
+const getItemsAndCategories = async () => {
+  const instance = await getInstane()
+  return await axios
     .all([
       instance.get('items'),
       instance.get('categories')
@@ -56,13 +64,22 @@ export const getItems = createAction('GET_ITEMS', async () => {
         }
       })
     )
-  const comments = await axios
+}
+
+const getComments = async (items) => {
+  const instance = await getInstane()
+  return await axios
     .all(
-      result.items.map((item) => instance.get(`comments/${item.id}`))
+      items.map((item) => instance.get(`comments/${item.id}`))
     )
     .then((comments) => {
       return comments.map((comment) => comment.data.data)
     })
+}
+
+export const getItems = createAction('GET_ITEMS', async () => {
+  const result = await getItemsAndCategories()
+  const comments = await getComments(result.items)
   console.info('result', result)
   console.info('comments', comments)
   return Object.assign({}, result, { comments })
