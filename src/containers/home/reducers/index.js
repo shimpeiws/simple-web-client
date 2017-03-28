@@ -43,6 +43,6 @@ export const getItems = createAction('GET_ITEMS', async () => {
       'Authorization': `Bearer ${jwtToken}`
     }
   })
-  const result = instance.get('http://localhost:3000/items')
+  const result = instance.get('items')
   return result.body
 })
