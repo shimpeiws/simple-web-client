@@ -43,6 +43,27 @@ export const getItems = createAction('GET_ITEMS', async () => {
       'Authorization': `Bearer ${jwtToken}`
     }
   })
-  const result = instance.get('items')
-  return result.body
+  const result = await axios
+    .all([
+      instance.get('items'),
+      instance.get('categories')
+    ])
+    .then(
+      axios.spread((itemResult, categoryResult) => {
+        return {
+          items: itemResult.data.data,
+          categories: categoryResult.data.data
+        }
+      })
+    )
+  const comments = await axios
+    .all(
+      result.items.map((item) => instance.get(`comments/${item.id}`))
+    )
+    .then((comments) => {
+      return comments.map((comment) => comment.data.data)
+    })
+  console.info('result', result)
+  console.info('comments', comments)
+  return Object.assign({}, result, { comments })
 })
