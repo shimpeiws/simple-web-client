@@ -84,3 +84,9 @@ export const getItems = createAction('GET_ITEMS', async () => {
   console.info('comments', comments)
   return Object.assign({}, result, { comments })
 })
+
+export const GetItemsBff = createAction('GET_ITEMS', async () => {
+  const result = await axios.get('http://localhost:1323/items')
+  console.info('result', result)
+  return result
+})
